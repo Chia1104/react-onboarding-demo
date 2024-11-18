@@ -31,7 +31,7 @@ export function OnboardingStep({ children }: { children: ReactNode }) {
     if (ref.current) {
       registerStep(ref);
     }
-  }, [registerStep]);
+  }, []);
 
   return (
     <div ref={ref} className="relative">
@@ -122,7 +122,7 @@ function OnboardingOverlay({ targetElement, step, onNext, onPrev, isFirstStep, i
   const padding = 10; // Padding around the highlighted area
 
   return (
-    <div className="fixed inset-0 z-50 pointer-events-none">
+    <div className="fixed inset-0 z-50">
       <div
         className="absolute inset-0 bg-black bg-opacity-50 transition-all duration-300 ease-in-out"
         style={{
@@ -135,7 +135,7 @@ function OnboardingOverlay({ targetElement, step, onNext, onPrev, isFirstStep, i
         }}
       />
       <div
-        className="absolute border-2 border-primary transition-all duration-300 ease-in-out pointer-events-auto"
+        className="absolute transition-all duration-300 ease-in-out pointer-events-auto"
         style={{
           top: `${top - padding}px`,
           left: `${left - padding}px`,
