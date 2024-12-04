@@ -2,16 +2,18 @@ import React, { useState, useEffect, createContext, useContext, ReactNode } from
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Slot, Slottable } from "@radix-ui/react-slot";
 
 type Step = {
+  id: string;
   title: string;
   content: string;
+  targetRef: React.RefObject<HTMLElement>;
 };
 
 type OnboardingContextType = {
-  registerStep: (ref: React.RefObject<HTMLElement>) => void;
   currentStepIndex: number;
-};
+} & Omit<OnboardingProps, "children">;
 
 const OnboardingContext = createContext<OnboardingContextType | null>(null);
 
@@ -23,20 +25,13 @@ export function useOnboardingStep() {
   return context;
 }
 
-export function OnboardingStep({ children }: { children: ReactNode }) {
-  const { registerStep } = useOnboardingStep();
-  const ref = React.useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (ref.current) {
-      registerStep(ref);
-    }
-  }, []);
-
+export function OnboardingStep({ children, id }: { children: ReactNode; id: string }) {
+  const context = React.useContext(OnboardingContext);
+  const targetRef = context?.steps.find((step) => step.id === id)?.targetRef;
   return (
-    <div ref={ref} className="relative">
-      {children}
-    </div>
+    <Slot ref={targetRef}>
+      <Slottable>{children}</Slottable>
+    </Slot>
   );
 }
 
@@ -50,24 +45,19 @@ type OnboardingProps = {
 
 export function Onboarding({ steps, onComplete, children, enabled, defaultStep = 0 }: OnboardingProps) {
   const [currentStep, setCurrentStep] = useState(defaultStep);
-  const [stepRefs, setStepRefs] = useState<React.RefObject<HTMLElement>[]>([]);
   const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
 
-  const registerStep = (ref: React.RefObject<HTMLElement>) => {
-    setStepRefs((prev) => [...prev, ref]);
-  };
-
   useEffect(() => {
-    if (stepRefs[currentStep] && stepRefs[currentStep].current) {
-      setTargetElement(stepRefs[currentStep].current);
+    if (steps[currentStep] && steps[currentStep].targetRef.current) {
+      setTargetElement(steps[currentStep].targetRef.current);
     }
-  }, [currentStep, stepRefs]);
+  }, [currentStep, steps]);
 
   useEffect(() => {
     if (!enabled) {
       setCurrentStep(defaultStep);
     }
-  }, [enabled]);
+  }, [enabled, defaultStep]);
 
   const nextStep = () => {
     if (currentStep < steps.length - 1) {
@@ -84,9 +74,12 @@ export function Onboarding({ steps, onComplete, children, enabled, defaultStep =
   };
 
   const contextValue = {
-    registerStep,
     currentStepIndex: currentStep,
-  };
+    steps,
+    onComplete,
+    enabled,
+    defaultStep,
+  } satisfies OnboardingContextType;
 
   return (
     <OnboardingContext.Provider value={contextValue}>

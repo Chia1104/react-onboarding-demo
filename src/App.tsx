@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Onboarding, OnboardingStep } from "@/components/onboarding";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,22 +8,35 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default function Page() {
   const [showOnboarding, setShowOnboarding] = useState(true);
 
+  const welcomeRef = useRef(null);
+  const mainRef = useRef(null);
+  const settingsRef = useRef(null);
+  const completeRef = useRef(null);
+
   const onboardingSteps = [
     {
+      id: "welcome",
       title: "歡迎使用",
       content: "這是我們應用的主頁。點擊「開始使用」按鈕來開始您的旅程。",
+      targetRef: welcomeRef,
     },
     {
+      id: "main",
       title: "功能介紹",
       content: "這裡是我們的主要功能區域，您可以在這裡執行各種操作。試試點擊這些按鈕！",
+      targetRef: mainRef,
     },
     {
+      id: "settings",
       title: "設置選項",
       content: "在這裡，您可以自定義應用的各種設置。試著輸入您的用戶名和郵箱。",
+      targetRef: settingsRef,
     },
     {
+      id: "complete",
       title: "完成",
       content: "恭喜！您已經了解了基本使用方法。點擊完成開始使用吧！",
+      targetRef: completeRef,
     },
   ];
 
@@ -38,12 +51,12 @@ export default function Page() {
       <Onboarding steps={onboardingSteps} enabled={showOnboarding} onComplete={handleComplete}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
-            <OnboardingStep>
+            <OnboardingStep id="welcome">
               <Button className="w-full" onClick={() => setShowOnboarding(true)}>
                 開始使用
               </Button>
             </OnboardingStep>
-            <OnboardingStep>
+            <OnboardingStep id="main">
               <Card>
                 <CardHeader>
                   <CardTitle>主要功能區域</CardTitle>
@@ -64,7 +77,7 @@ export default function Page() {
           </div>
 
           <div className="space-y-4">
-            <OnboardingStep>
+            <OnboardingStep id="settings">
               <Card>
                 <CardHeader>
                   <CardTitle>設置</CardTitle>
@@ -78,7 +91,7 @@ export default function Page() {
                 </CardContent>
               </Card>
             </OnboardingStep>
-            <OnboardingStep>
+            <OnboardingStep id="complete">
               <Button className="w-full" variant="outline" onClick={handleComplete}>
                 完成設置
               </Button>
