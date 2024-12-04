@@ -5,56 +5,58 @@ import { Onboarding, OnboardingStep } from "@/components/onboarding";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export default function AppWithOnboarding() {
+export default function Page() {
   const [showOnboarding, setShowOnboarding] = useState(true);
 
   const onboardingSteps = [
     {
-      title: "欢迎使用",
-      content: "这是我们应用的主页。点击这里开始您的旅程。",
+      title: "歡迎使用",
+      content: "這是我們應用的主頁。點擊「開始使用」按鈕來開始您的旅程。",
     },
     {
-      title: "功能介绍",
-      content: "这里是我们的主要功能区域，您可以在这里执行各种操作。",
+      title: "功能介紹",
+      content: "這裡是我們的主要功能區域，您可以在這裡執行各種操作。試試點擊這些按鈕！",
     },
     {
-      title: "设置选项",
-      content: "在这里，您可以自定义应用的各种设置。",
+      title: "設置選項",
+      content: "在這裡，您可以自定義應用的各種設置。試著輸入您的用戶名和郵箱。",
     },
     {
       title: "完成",
-      content: "恭喜！您已经了解了基本使用方法。点击完成开始使用吧！",
+      content: "恭喜！您已經了解了基本使用方法。點擊完成開始使用吧！",
     },
   ];
 
+  const handleComplete = () => {
+    setShowOnboarding(false);
+  };
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">我的应用</h1>
+      <h1 className="text-3xl font-bold mb-6">我的應用</h1>
 
-      <Onboarding
-        steps={onboardingSteps}
-        enabled={showOnboarding}
-        onComplete={() => setShowOnboarding(false)}
-        defaultStep={1}>
+      <Onboarding steps={onboardingSteps} enabled={showOnboarding} onComplete={handleComplete}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-4">
             <OnboardingStep>
               <Button className="w-full" onClick={() => setShowOnboarding(true)}>
-                开始使用
+                開始使用
               </Button>
             </OnboardingStep>
             <OnboardingStep>
               <Card>
                 <CardHeader>
-                  <CardTitle>主要功能区域</CardTitle>
+                  <CardTitle>主要功能區域</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p>这里是应用的核心功能，您可以在这里执行各种操作。</p>
+                  <p>這裡是應用的核心功能，您可以在這裡執行各種操作。</p>
                   <div className="mt-4">
-                    <Button variant="outline" className="mr-2">
+                    <Button variant="outline" className="mr-2" onClick={() => alert("功能 1 已啟動！")}>
                       功能 1
                     </Button>
-                    <Button variant="outline">功能 2</Button>
+                    <Button variant="outline" onClick={() => alert("功能 2 已啟動！")}>
+                      功能 2
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -65,25 +67,20 @@ export default function AppWithOnboarding() {
             <OnboardingStep>
               <Card>
                 <CardHeader>
-                  <CardTitle>设置</CardTitle>
+                  <CardTitle>設置</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      {/* <Label htmlFor="name">用户名</Label>
-                      <Input id="name" placeholder="输入您的用户名" /> */}
-                    </div>
-                    <div className="space-y-2">
-                      {/* <Label htmlFor="email">邮箱</Label>
-                      <Input id="email" type="email" placeholder="输入您的邮箱" /> */}
+                      <p>test 2</p>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </OnboardingStep>
             <OnboardingStep>
-              <Button className="w-full" variant="outline">
-                完成设置
+              <Button className="w-full" variant="outline" onClick={handleComplete}>
+                完成設置
               </Button>
             </OnboardingStep>
           </div>

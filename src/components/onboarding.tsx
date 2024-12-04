@@ -122,9 +122,9 @@ function OnboardingOverlay({ targetElement, step, onNext, onPrev, isFirstStep, i
   const padding = 10; // Padding around the highlighted area
 
   return (
-    <div className="fixed inset-0 z-50">
+    <div className="fixed inset-0 z-50 pointer-events-none">
       <div
-        className="absolute inset-0 bg-black bg-opacity-50 transition-all duration-300 ease-in-out"
+        className="absolute inset-0 bg-black bg-opacity-50 transition-all duration-300 ease-in-out pointer-events-auto"
         style={{
           clipPath: `polygon(
             0% 0%, 100% 0%, 100% 100%, 0% 100%,
@@ -135,12 +135,12 @@ function OnboardingOverlay({ targetElement, step, onNext, onPrev, isFirstStep, i
         }}
       />
       <div
-        className="absolute transition-all duration-300 ease-in-out pointer-events-auto"
+        className="absolute"
         style={{
           top: `${top - padding}px`,
           left: `${left - padding}px`,
-          width: `${width + padding * 2}px`,
-          height: `${height + padding * 2}px`,
+          width: `${width + 2 * padding}px`,
+          height: `${height + 2 * padding}px`,
         }}
       />
       <Card className="w-80 absolute pointer-events-auto" style={{ top: `${top + height + 20}px`, left: `${left}px` }}>
