@@ -1,14 +1,21 @@
 import React, { useState, useEffect, createContext, useContext, ReactNode } from "react";
 import { createPortal } from "react-dom";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Slot, Slottable } from "@radix-ui/react-slot";
 
-type Step = {
+export type ActionContext = {
+  next: () => void;
+  prev: () => void;
+  isFirstStep: boolean;
+  isLastStep: boolean;
+};
+
+export type Step = {
   id: string;
-  title: string;
-  content: string;
+  content?: (ctx: ActionContext) => ReactNode;
   targetRef: React.RefObject<HTMLElement>;
+  onNext?: () => void;
+  onPrev?: () => void;
 };
 
 type OnboardingContextType = {
@@ -37,13 +44,12 @@ export function OnboardingStep({ children, id }: { children: ReactNode; id: stri
 
 type OnboardingProps = {
   steps: Step[];
-  onComplete?: () => void;
   children: ReactNode;
   enabled?: boolean;
   defaultStep?: number;
 };
 
-export function Onboarding({ steps, onComplete, children, enabled, defaultStep = 0 }: OnboardingProps) {
+export function Onboarding({ steps, children, enabled, defaultStep = 0 }: OnboardingProps) {
   const [currentStep, setCurrentStep] = useState(defaultStep);
   const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
 
@@ -62,8 +68,9 @@ export function Onboarding({ steps, onComplete, children, enabled, defaultStep =
   const nextStep = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
-    } else {
-      onComplete?.();
+    }
+    if (steps[currentStep].onNext) {
+      steps[currentStep].onNext();
     }
   };
 
@@ -71,12 +78,14 @@ export function Onboarding({ steps, onComplete, children, enabled, defaultStep =
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1);
     }
+    if (steps[currentStep].onPrev) {
+      steps[currentStep].onPrev();
+    }
   };
 
   const contextValue = {
     currentStepIndex: currentStep,
     steps,
-    onComplete,
     enabled,
     defaultStep,
   } satisfies OnboardingContextType;
@@ -137,18 +146,14 @@ function OnboardingOverlay({ targetElement, step, onNext, onPrev, isFirstStep, i
         }}
       />
       <Card className="w-80 absolute pointer-events-auto" style={{ top: `${top + height + 20}px`, left: `${left}px` }}>
-        <CardHeader>
-          <CardTitle>{step.title}</CardTitle>
-        </CardHeader>
         <CardContent>
-          <p>{step.content}</p>
+          {step.content?.({
+            next: onNext,
+            prev: onPrev,
+            isFirstStep,
+            isLastStep,
+          })}
         </CardContent>
-        <CardFooter className="flex justify-between">
-          <Button onClick={onPrev} disabled={isFirstStep} variant="outline">
-            上一步
-          </Button>
-          <Button onClick={onNext}>{isLastStep ? "完成" : "下一步"}</Button>
-        </CardFooter>
       </Card>
     </div>
   );
